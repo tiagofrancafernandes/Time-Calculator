@@ -82,6 +82,7 @@ function handleStartTimeKeydown(event) {
     if (event.key === "Escape") {
         clearAllAndFocusStart();
     } else if (event.key === "Enter") {
+        event.preventDefault();
         endInput.value?.focus();
     }
 }
@@ -91,6 +92,7 @@ function handleEndTimeKeydown(event) {
         clearAllAndFocusStart();
     } else if (event.key === "Enter") {
         // Focus back to start time on Enter at end time
+        event.preventDefault();
         startInput.value?.focus();
     }
 }
