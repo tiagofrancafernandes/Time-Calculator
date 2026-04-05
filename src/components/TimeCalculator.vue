@@ -13,8 +13,10 @@
                         Start time
                     </label>
                     <input
+                        ref="startInput"
                         v-model="start"
                         type="time"
+                        @keydown="handleStartTimeKeydown"
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
@@ -24,8 +26,10 @@
                         End time
                     </label>
                     <input
+                        ref="endInput"
                         v-model="end"
                         type="time"
+                        @keydown="handleEndTimeKeydown"
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
@@ -44,15 +48,21 @@
             <p class="text-xs text-gray-500">
                 If end time is smaller than start time, midnight crossing is assumed.
             </p>
+
+            <p class="text-xs text-gray-500">
+                <strong>Tips:</strong> Press <span class="inline-block bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-mono border border-gray-300">Enter</span> to move between fields • Press <span class="inline-block bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-mono border border-gray-300">Esc</span> to clear all
+            </p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 
 const start = ref("");
 const end = ref("");
+const startInput = ref(null);
+const endInput = ref(null);
 
 function parseTime(value) {
     if (!value) return null;
@@ -61,6 +71,43 @@ function parseTime(value) {
 
     return (hours * 60) + minutes;
 }
+
+function clearAllAndFocusStart() {
+    start.value = "";
+    end.value = "";
+    startInput.value?.focus();
+}
+
+function handleStartTimeKeydown(event) {
+    if (event.key === "Escape") {
+        clearAllAndFocusStart();
+    } else if (event.key === "Enter") {
+        endInput.value?.focus();
+    }
+}
+
+function handleEndTimeKeydown(event) {
+    if (event.key === "Escape") {
+        clearAllAndFocusStart();
+    } else if (event.key === "Enter") {
+        // Focus back to start time on Enter at end time
+        startInput.value?.focus();
+    }
+}
+
+function handleWindowKeydown(event) {
+    if (event.key === "Escape") {
+        clearAllAndFocusStart();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener("keydown", handleWindowKeydown);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener("keydown", handleWindowKeydown);
+});
 
 const elapsedMinutes = computed(() => {
     const startMinutes = parseTime(start.value);
