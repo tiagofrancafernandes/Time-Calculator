@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TimeCalculator from './components/TimeCalculator.vue';
+import TimeCalculator from '@/components/TimeCalculator.vue';
 </script>
 
 <template>
